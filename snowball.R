@@ -12,6 +12,7 @@ library(SnowballC)
 library(wordcloud)
 library(RColorBrewer)
 library(tidytext)
+library(tidyr)
 library(quanteda)
 library(quanteda.textstats)
 library(htmltools)
@@ -22,6 +23,7 @@ SnowBall <- function(PMID_origine) {
   
   
   #descendant sur PMID origine (les articles présents dans les références)
+  PMID_origine<-extract_numeric(PMID_origine)
   html_ref <- paste("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pubmed&linkname=pubmed_pubmed_refs&id=", PMID_origine, sep="")
   ref <- read_html(html_ref)
   ref <- as.character(ref)
