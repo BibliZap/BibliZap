@@ -1,5 +1,5 @@
 # BibliZap
-Outil de recherche bibliographique par recursivité
+Recursivity-based related articles search engine
 
 ## Principle
 BibliZap aims to catalog articles similar to the source article based on both upward and downward citations. Downward citations correspond to the references of the articles (their bibliography). Upward citations correspond to the articles citing the source article. Here is a diagram summarizing the process:
