@@ -70,12 +70,12 @@ ui <- fluidPage(
   # En-tête personnalisée
   div(class = "custom-header center-vertically",
       tags$div(class = "navbar navbar-center", 
-               img(src = "logo_BZ.png", height = "100px", width = "300px", class= "center-vertically"),
+               img(src = "BibliZap.png", height = "200px", width = "600px", class= "center-vertically"),
                tags$div(class = "container-fluid", # Use Bootstrap's container-fluid class
                         tags$div(class = "row",
                                  tags$div(class = "col-md-12", # Use Bootstrap's col-md-12 class for full width
                                           tags$div(class = "input-container",
-                                                   tags$label(class = "centered-label custom-label", "Entrez votre PMID"),
+                                                   tags$label(class = "centered-label custom-label", "Enter a PMID"),
                                                    tags$input(id = "PMID_origine", type = "text", class = "form-control custom-textinput")
                                           )
                                  )
@@ -83,7 +83,7 @@ ui <- fluidPage(
                         tags$div(class = "row", # Separate row for the button
                                  tags$div(class = "col-md-12", # Use Bootstrap's col-md-12 class for full width
                                           tags$div(class = "button-container",
-                                                   actionButton("submit_button", "Fouiller les citations", class = "custom-button custom-button-label")
+                                                   actionButton("submit_button", "Search for related articles", class = "custom-button custom-button-label")
                                           )
                                  )
                         )
@@ -93,34 +93,34 @@ ui <- fluidPage(
   # Contenu de lapplication
   div(class = "custom-content",
       tabsetPanel(id = "tabs",
-                  tabPanel("Bibliographie",
+                  tabPanel("Bibliography",
                            # Spinner pour indiquer le chargement
                            withSpinner(DTOutput("bibliographie_table"), type = 2, color = "black", color.background = "white"),
-                           downloadButton("download_bibliographie", "Télécharger la bibliographie")
+                           downloadButton("download_bibliographie", "Download the bibliography")
                   ),
-                  tabPanel("Mots spécifiques",
+                  tabPanel("Specific words",
                            # Contenu de l'onglet "Obtenir mon PMID" ici
-                           p("Bientôt disponible"),
+                           p("Available soon"),
                            
                            
                            
                   )
                   ,
-                  tabPanel("Obtenir mon PMID",
+                  tabPanel("How to get a PMID ?",
                            # Contenu de l'onglet "Obtenir mon PMID" ici
-                           p("Pour obtenir votre le PMID (PubMed identifier) de votre article, rien de plus simple. Il suffit simplement d'écrire le titre de votre article dans la barre de recherche PubMed et vous verrez dans les résultats l'inscription \"PMID: 12345678\". Celui ci est composé en général de 8 chiffres, mais il peut être plus ou moins long en fonction de l'année de publication."),
+                           p("To get a PMID (PubMed IDentifier), just search for your article of interest in PubMed, and you will see a number in the format: \"PMID: 12345678\". It generally comprises 8 digits, but may be shorter or longer depending on the year of publishing."),
                   ),
-                  tabPanel("Comment ça marche ?",
+                  tabPanel("How does it work ?",
                            # Contenu de l'onglet "Comment ça marche ?" ici
-                           h2("Fonctionnement général"),
-                           p("BiblioZap a pour but de recenser les articles similaires à l'article source à partir des citations ascendantes et descendantes. Les citations descendantes correspondent aux références des articles (leur bibliographie) et les citations ascendantes correspondent aux articles qui citent l'article source. Voici un schéma qui résume le fonctionnement :"),
-                           tags$img(src = "fonctionnement.png", width = "600px"),
-                           p("A chaque étage est compé le nombre de fois que chaque PMID apparaît. A la fin du processus, la somme des occurences donne le score. Par exemple, si un article est retrouvé 1 fois dans les références de l'article source, puis est retrouvé 6 fois dans les articles qui sont cités par les articles qui sont cités par l'article sources, puis n'est plus retrouvé ailleurs il aura le score de 7."),
-                           h3("Pourquoi ça ne marche qu'avec PubMed ?"),
-                           p("PubMed s'appuie sur MedLine de la NLM (National Library of Medicine USA). MedLine la base de données de référence dans le domaine de la recherche médicale. La NLM effectue un contrôle des journaux présents sur la plateforme. Ceux-ci sont selectionnés de manière indépendante par un collège d'expert."),
-                           p("BibliZap s'appuie sur l'expertise de la NLM."),
-                           h2("N'y-a-t-il pas un risque que ça participe au biais de citation ?"),
-                           p("Oui BiblioZap peut participer au biais de citation, il est donc extremement important de toujours effectuer en parallèle une recherche d'articles par mots clés. Surtout quand vous souhaitez publier un travail."),
+                           h2("General principle"),
+                           p("BibliZap aims to catalog articles similar to the source article based on both upward and downward citations. Downward citations correspond to the references of the articles (their bibliography). Upward citations correspond to the articles citing the source article. Here is a diagram summarizing the process:"),
+                           tags$img(src = "Figure1.png", width = "800px"),
+                           p("At each level, the number of times each PMID appears is recorded. At the end of the process, the sum of occurrences provides the score. For instance, if an article is found once in the references of the source article, then is discovered 6 times in the articles cited by the articles that are cited by the source article, and is not found elsewhere, its score will be 7."),
+                           h3("Why does it work only with PubMed?"),
+                           p("PubMed relies on MedLine, a database developed by the NLM (National Library of Medicine USA). MedLine is the premier database in the field of medical research. The NLM performs quality control on the journals available on the platform. These journals are independently selected by a panel of experts."),
+                           p("BibliZap relies on the expertise of the NLM."),
+                           h3("Is there a risk that BibliZap contributes to the citation bias?"),
+                           p("Yes, there is a potential risk of BibliZap contributing to citation bias. Therefore, it is extremely important to always conduct keyword-based article searches in parallel. This is especially crucial when you intend to publish your work."),
                   )
       )
   )
