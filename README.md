@@ -7,4 +7,4 @@ BibliZap aims to catalog articles similar to the source article based on both up
 At each level, the number of times each PMID appears is recorded. At the end of the process, the sum of occurrences provides the score. For instance, if an article is found once in the references of the source article, then is discovered 6 times in the articles cited by the articles that are cited by the source article, and is not found elsewhere, its score will be 7.
 
 ## Credits
-BibliZap was created by Victor Leblanc, with the help of Bastien Le Guellec and Raphaël Bentegac (Univ Lille)
+BibliZap was created by Victor Leblanc, with help from Bastien Le Guellec and Raphaël Bentegac (Univ Lille)
