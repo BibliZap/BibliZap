@@ -10,7 +10,7 @@ server <- function(input, output, session) {
     
     
     # Stocker la variable Bibliographie dans l'environnement global
-    assign("Bibliographie", Bibliographie, envir = .GlobalEnv)
+    assign("Bibliography", Bibliographie, envir = .GlobalEnv)
     
     return(Bibliographie)
   })
@@ -23,7 +23,7 @@ server <- function(input, output, session) {
   # Gérer le téléchargement de la bibliographie au format Excel (.xlsx)
   output$download_bibliographie <- downloadHandler(
     filename = function() {
-      paste("BiblioZap-", format(Sys.time(), "%Y%m%d%H%M%S"), ".xlsx", sep = "")
+      paste("BibliZap-", format(Sys.time(), "%Y%m%d%H%M%S"), ".xlsx", sep = "")
     },
     content = function(file) {
       # Get the bibliographie data from the reactive
@@ -43,7 +43,7 @@ server <- function(input, output, session) {
     mots_specifiques_resultat <- analyse_mots_specifiques(Bibliographie)
     output$mots_specifiques_plot <- renderPlot({
       # Code pour créer le plot basé sur mots_specifiques_resultat
-      plot(mots_specifiques_resultat, main = "Mots spécifiques")
+      plot(mots_specifiques_resultat, main = "Specific words")
     })
   })
 }
