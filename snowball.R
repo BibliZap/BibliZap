@@ -178,19 +178,19 @@ SnowBall <- function(PMID_origine) {
   dp_features <- str_extract_all(features, "(?<=DP  - )\\d{4}")
   dp_features <- unlist(dp_features)
   dp_features <- data.frame(dp_features)
-  colnames(dp_features) <- "Annee"
+  colnames(dp_features) <- "Year"
   # Extraction de JT
   jt_features <- str_extract_all(features, "(?<=JT  - ).+")
   jt_features <- unlist(jt_features)
   jt_features <- data.frame(jt_features)
-  colnames(jt_features) <- "Revue"
+  colnames(jt_features) <- "Journal"
   # Extraction de TI
   ti_features <- str_extract_all(features, "(?<=TI  - )([\\s\\S]*?)(?=[A-Z]{2,}\\s{1,}-)")
   ti_features <- unlist(ti_features)
   ti_features <- gsub("\r\n", " ", ti_features)
   ti_features <- gsub(" +", " ", ti_features)
   ti_features <- data.frame(ti_features)
-  colnames(ti_features) <- "Titre"
+  colnames(ti_features) <- "Title"
   
   # Extraction de AB
   # Diviser le texte en ab_blocs correspondant à chaque article
@@ -232,7 +232,7 @@ SnowBall <- function(PMID_origine) {
   au_features$auteur <- gsub("^[A-Z]+\\s*-\\s+", "", au_features$auteur)
   au_features$auteur <- gsub("\\s+", " ", au_features$auteur)
   au_features$auteur <- trimws(au_features$auteur, "left")
-  colnames(au_features) <- "Premier auteur"
+  colnames(au_features) <- "First author"
   
   
   # fusion de features
@@ -241,7 +241,7 @@ SnowBall <- function(PMID_origine) {
   #FINAL
   Bibliographie <- left_join(total, df_features, by="PMID")
   Bibliographie <- Bibliographie %>% 
-    select("PMID", "Score", "Titre", "Premier auteur", "Annee", "Revue", "Abstract") %>%
+    select("PMID", "Score", "Title", "First author", "Year", "Journal", "Abstract") %>%
     slice(1:nb_lignes_extraites)
   
   # Identifier l'index de la ligne correspondant à PMID_origine
@@ -249,7 +249,7 @@ SnowBall <- function(PMID_origine) {
   
   # Mettre à jour la valeur dans la colonne Score pour l'index identifié
   if (length(index_ligne) > 0) {
-    Bibliographie[index_ligne, "Score"] <- "Article source"
+    Bibliographie[index_ligne, "Score"] <- "Source Article"
     
   }
   
