@@ -1,4 +1,4 @@
-[![BibliZap.png](https://i.postimg.cc/2y4d77Jh/BibliZap.png)](https://postimg.cc/JHzB1ZRz)
+[![BibliZap.png](www/logo_BiblioZap_NB.png)]
 # BibliZap
 Recursivity-based related articles search engine
 
