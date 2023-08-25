@@ -139,7 +139,8 @@ ui <- fluidPage(
                     tabPanel("GitHub",
                              div(class = "center-vertically-horiz",
                                  a(href = "https://github.com/Rotrocs/BibliZap.git",
-                                   img(src = "github-mark.png", width = "50px", height = "50px"))
+                                   img(src = "github-mark.png", width = "50px", height = "50px"),
+                                   target = "_blank")
                                  )
                              )
                     )
