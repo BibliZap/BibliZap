@@ -1,4 +1,4 @@
-[![BibliZap.png](www/logo_BiblioZap_NB.png)]
+![BibliZap.png](www/logo_BiblioZap_NB.png)
 # BibliZap
 Recursivity-based related articles search engine
 
