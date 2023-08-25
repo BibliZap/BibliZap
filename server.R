@@ -10,7 +10,7 @@ server <- function(input, output, session) {
     
     
     # Stocker la variable Bibliographie dans l'environnement global
-    assign("Bibliography", Bibliographie, envir = .GlobalEnv)
+    assign("Bibliographie", Bibliographie, envir = .GlobalEnv)
     
     return(Bibliographie)
   })
