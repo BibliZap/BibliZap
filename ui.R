@@ -132,7 +132,7 @@ ui <- fluidPage(
                            h3("Intellectual Property"),
                            p("All intellectual property rights in and to the content and materials on this website are owned by us or our licensors. You may not use, reproduce, distribute, or otherwise exploit any content from this website without our prior written consent. Credit for the BibliZap logo depicting an avalanche on a mountain: Tommaso.sansone91, CC0, via Wikimedia Commons."),
                            h3("Contact Information"),
-                           p("If you have any questions or concerns regarding the legal information on this website, please contact us at XXXXXXXXXX."),
+                           p("If you have any questions or concerns regarding the legal information on this website, please contact us at leblancvictor59@gmail.com."),
                            h3("Web host"),
                            p("Website hosted by OVH (2 rue Kellermann – BP 80157 59053 ROUBAIX CEDEX 1)."
                     )),
