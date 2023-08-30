@@ -1,155 +1,58 @@
-library(shiny)
-library(dplyr)
-library(shinycssloaders)
-library(shinyjs)
-library(DT) 
-library(openxlsx)
-library(tidyverse)
-library(stringr)
-library(rvest)
-library(tm)
-library(SnowballC)
-library(wordcloud)
-library(RColorBrewer)
-library(tidytext)
-library(tidyr)
-library(quanteda)
-library(quanteda.textstats)
-library(htmltools)
-library(lubridate)
+require(tidyverse)
+
+get_references_onestep = function(src_pmid, asc=F) {
+  MAX_URL_SIZE_REFNUMBER=325
+  splitter = function(vec, chunksize) {
+    split(vec, ceiling(seq_along(vec)/chunksize))
+  }
+  
+  get_references_onestep_unsafe = function(src_pmid, asc) {
+    url = ifelse(asc,
+                 "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pubmed&linkname=pubmed_pubmed_citedin&id=",
+                 "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pubmed&linkname=pubmed_pubmed_refs&id=")
+    url |>
+      paste(paste(src_pmid, collapse = "&id="), sep="") |> 
+      xml2::read_html() |> 
+      xml2::xml_find_all(".//id") |> 
+      xml2::xml_text()
+  }
+  
+  onestep = src_pmid |>
+    splitter(MAX_URL_SIZE_REFNUMBER) |>
+    lapply(get_references_onestep_unsafe, asc) |> 
+    unlist(recursive = T) |> 
+    unname()
+  
+  return(tail(onestep, n = length(onestep) - length(src_pmid)))
+}
+
+get_references = function(src_pmid, depth=1, asc=T, desc=T) {
+  if(depth<=0 || (asc==F && desc==F)) {
+    return(src_pmid)
+  } else {
+    ref_asc = c()
+    ref_desc = c()
+    if(asc) {
+      ref_asc = get_references(src_pmid, depth-1, asc, desc) |> get_references_onestep(asc=T)
+    }
+    if(desc) {
+      ref_desc = get_references(src_pmid, depth-1, asc, desc) |> get_references_onestep(asc=F)
+    }
+    
+    return(c(ref_asc, ref_desc))
+  }
+}
+
+
 
 # Source the file containing the SnowBallFunction
 SnowBall <- function(PMID_origine) {
   
-  
-  #descendant sur PMID origine (les articles présents dans les références)
-  PMID_origine<-extract_numeric(PMID_origine)
-  html_ref <- paste("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pubmed&linkname=pubmed_pubmed_refs&id=", PMID_origine, sep="")
-  ref <- read_html(html_ref)
-  ref <- as.character(ref)
-  pmid_ref <- str_extract_all(ref, "(?<=<id>)[^<]+(?=</id>)", simplify = TRUE)
-  pmid_ref <- t(pmid_ref)
-  pmid_ref <- data.frame(pmid_ref)
-  
-  #ascendant sur pmid_cite_ref
-  asc_ref_concatenated <- paste(pmid_ref$pmid_ref, collapse = "&id=")
-  html_asc_ref <- paste("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pubmed&linkname=pubmed_pubmed_citedin&id=", asc_ref_concatenated, sep="")
-  asc_ref <- read_html(html_asc_ref)
-  asc_ref <- as.character(asc_ref)
-  pmid_asc_ref <- str_extract_all(asc_ref, "(?<=<id>)[^<]+(?=</id>)", simplify = TRUE)
-  pmid_asc_ref <- t(pmid_asc_ref)
-  pmid_asc_ref <- data.frame(pmid_asc_ref)
-  
-  #descendant sur pmid_cite_ref
-  desc_ref_concatenated <- paste(pmid_ref$pmid_ref, collapse = "&id=")
-  html_desc_ref <- paste("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pubmed&linkname=pubmed_pubmed_refs&id=", desc_ref_concatenated, sep="")
-  desc_ref <- read_html(html_desc_ref)
-  desc_ref <- as.character(desc_ref)
-  pmid_desc_ref <- str_extract_all(desc_ref, "(?<=<id>)[^<]+(?=</id>)", simplify = TRUE)
-  pmid_desc_ref <- t(pmid_desc_ref)
-  pmid_desc_ref <- data.frame(pmid_desc_ref)
-  
-  #############################################################
-  
-  #ascendant sur PMID origine (les articles qui citent cet article)
-  html_citedby <- paste("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pubmed&linkname=pubmed_pubmed_citedin&id=", PMID_origine, sep="")
-  citedby <- read_html(html_citedby)
-  citedby <- as.character(citedby)
-  pmid_citedby <- str_extract_all(citedby, "(?<=<id>)[^<]+(?=</id>)", simplify = TRUE)
-  pmid_citedby <- t(pmid_citedby)
-  pmid_citedby <- data.frame(pmid_citedby)
-  
-  #ascendant sur pmid_cited_by
-  asc_citedby_concatenated <- paste(pmid_citedby$pmid_citedby, collapse = "&id=")
-  
-  # Vérifier la longueur de asc_citedby_concatenated
-  if (length(pmid_citedby[,1]) > 300) {
-    # Découper en morceaux de taille maximale de 300
-    citedby_chunks <- split(pmid_citedby$pmid_citedby, ceiling(seq_along(pmid_citedby$pmid_citedby)/300))
-    pmid_asc_citedby <- character(0) # Initialiser le vecteur pour stocker les résultats
-    
-    # Boucle pour chaque morceau
-    for (chunk in citedby_chunks) {
-      chunk_concatenated <- paste(chunk, collapse = "&id=")
-      html_asc_citedby <- paste("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pubmed&linkname=pubmed_pubmed_citedin&id=", chunk_concatenated, sep="")
-      asc_citedby <- read_html(html_asc_citedby)
-      asc_citedby <- as.character(asc_citedby)
-      pmid_asc_citedby_chunk <- str_extract_all(asc_citedby, "(?<=<id>)[^<]+(?=</id>)", simplify = TRUE)
-      pmid_asc_citedby_chunk <- t(pmid_asc_citedby_chunk)
-      pmid_asc_citedby_chunk <- data.frame(pmid_asc_citedby_chunk)
-      pmid_asc_citedby <- rbind(pmid_asc_citedby, pmid_asc_citedby_chunk)
-    }
-  } else {
-    html_asc_citedby <- paste("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pubmed&linkname=pubmed_pubmed_citedin&id=", asc_citedby_concatenated, sep="")
-    asc_citedby <- read_html(html_asc_citedby)
-    asc_citedby <- as.character(asc_citedby)
-    pmid_asc_citedby <- str_extract_all(asc_citedby, "(?<=<id>)[^<]+(?=</id>)", simplify = TRUE)
-    pmid_asc_citedby <- t(pmid_asc_citedby)
-    pmid_asc_citedby <- data.frame(pmid_asc_citedby)
-  }
-  
-  
-  #descendant sur pmid_cited_by
-  desc_citedby_concatenated <- paste(pmid_citedby$pmid_citedby, collapse = "&id=")
-  
-  # Vérifier la longueur de desc_citedby_concatenated
-  if (length(pmid_citedby[,1]) > 300) {
-    # Découper en morceaux de taille maximale de 300
-    citedby_chunks <- split(pmid_citedby$pmid_citedby, ceiling(seq_along(pmid_citedby$pmid_citedby)/300))
-    pmid_desc_citedby <- character(0) # Initialiser le vecteur pour stocker les résultats
-    
-    # Boucle pour chaque morceau
-    for (chunk in citedby_chunks) {
-      chunk_concatenated <- paste(chunk, collapse = "&id=")
-      html_desc_citedby <- paste("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pubmed&linkname=pubmed_pubmed_citedin&id=", chunk_concatenated, sep="")
-      desc_citedby <- read_html(html_desc_citedby)
-      desc_citedby <- as.character(desc_citedby)
-      pmid_desc_citedby_chunk <- str_extract_all(desc_citedby, "(?<=<id>)[^<]+(?=</id>)", simplify = TRUE)
-      pmid_desc_citedby_chunk <- t(pmid_desc_citedby_chunk)
-      pmid_desc_citedby_chunk <- data.frame(pmid_desc_citedby_chunk)
-      pmid_desc_citedby <- rbind(pmid_desc_citedby, pmid_desc_citedby_chunk)
-    }
-  } else {
-    html_desc_citedby <- paste("https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pubmed&linkname=pubmed_pubmed_citedin&id=", desc_citedby_concatenated, sep="")
-    desc_citedby <- read_html(html_desc_citedby)
-    desc_citedby <- as.character(desc_citedby)
-    pmid_desc_citedby <- str_extract_all(desc_citedby, "(?<=<id>)[^<]+(?=</id>)", simplify = TRUE)
-    pmid_desc_citedby <- t(pmid_desc_citedby)
-    pmid_desc_citedby <- data.frame(pmid_desc_citedby)
-  }
-  
-  
-  #############################################################
-  
-  #on fusionne tous les data frame
-  
-  resume_pmid_ref <- data.frame(table(unlist(pmid_ref)))
-  resume_pmid_desc_ref <- data.frame(table(unlist(pmid_desc_ref)))
-  resume_pmid_asc_ref <- data.frame(table(unlist(pmid_asc_ref)))
-  
-  
-  resume_pmid_citedby <- data.frame(table(unlist(pmid_citedby)))
-  resume_pmid_desc_citedby <- data.frame(table(unlist(pmid_desc_citedby)))
-  resume_pmid_asc_citedby <- data.frame(table(unlist(pmid_asc_citedby)))
-  
-  colnames(resume_pmid_ref)[c(1,2)] <- c("PMID", "freq_pmid_ref")
-  colnames(resume_pmid_desc_ref)[c(1,2)] <- c("PMID", "freq_pmid_desc_ref")
-  colnames(resume_pmid_asc_ref)[c(1,2)] <- c("PMID", "freq_pmid_asc_ref")
-  colnames(resume_pmid_citedby)[c(1,2)] <- c("PMID", "freq_pmid_citedby")
-  colnames(resume_pmid_desc_citedby)[c(1,2)] <- c("PMID", "freq_pmid_desc_citedby")
-  colnames(resume_pmid_asc_citedby)[c(1,2)] <- c("PMID", "freq_pmid_asc_citedby")
-  
-  total <- full_join(resume_pmid_ref, resume_pmid_desc_ref, by="PMID")
-  total <- full_join(total, resume_pmid_asc_ref, by="PMID")
-  total <- full_join(total, resume_pmid_citedby, by="PMID")
-  total <- full_join(total, resume_pmid_asc_citedby, by="PMID")
-  total <- full_join(total, resume_pmid_desc_citedby, by="PMID")
-  
-  total <- replace(total,is.na(total),0)
-  
-  total$Score <- total$"freq_pmid_ref"+total$"freq_pmid_desc_ref"+total$"freq_pmid_asc_ref"+total$"freq_pmid_citedby"+total$"freq_pmid_desc_citedby"+total$"freq_pmid_asc_citedby"
-  
-  total <- total[order(total$Score, decreasing = TRUE),]
+  total = tibble(PMID = get_references(PMID_origine, depth=2)) |> 
+    group_by(PMID) |>
+    summarise(Score=n()) |>
+    arrange(-Score) |> 
+    mutate(Score = Score |> as.character())
   
   ################################## Joindre revue et année
   
@@ -264,6 +167,5 @@ SnowBall <- function(PMID_origine) {
     Bibliographie$PMID, Bibliographie$PMID
   )
   
-  datatable(Bibliographie, escape = FALSE)
-  
+  DT::datatable(Bibliographie, escape = FALSE)
 }
