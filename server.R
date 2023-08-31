@@ -43,7 +43,7 @@ server <- function(input, output, session) {
       Bibliographie_to_dl$PMID <- gsub("<a.*?>(\\d+)</a>", "\\1", Bibliographie_to_dl$PMID)
       
       # Save the data to an Excel file
-      write.xlsx(Bibliographie_to_dl, file, row.names = FALSE)
+      writexl::write_xlsx(x = Bibliographie_to_dl, path = file)
     }
   )
   
