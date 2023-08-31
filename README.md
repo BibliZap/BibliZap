@@ -7,5 +7,10 @@ BibliZap aims to catalog articles similar to the source article based on both up
 [![Figure1.png](https://i.postimg.cc/tCGr2KQg/Figure1.png)](https://postimg.cc/3W9CwbwM)
 At each level, the number of times each PMID appears is recorded. At the end of the process, the sum of occurrences provides the score. For instance, if an article is found once in the references of the source article, then is discovered 6 times in the articles cited by the articles that are cited by the source article, and is not found elsewhere, its score will be 7.
 
+BibliZap is based on multi-level bidirectionnal citation searching, a technique explored here: 
+
+Hinde, S., Spackman, E. Bidirectional Citation Searching to Completion: An Exploration of Literature Searching Methods. PharmacoEconomics 33, 5–11 (2015). https://doi.org/10.1007/s40273-014-0205-3
+
 ## Credits
 BibliZap was created by Victor Leblanc, with help from Bastien Le Guellec and Raphaël Bentegac (Univ Lille)
+Faculty: Aghiles Hamroun and Rémi Lenain (Univ Lille)
