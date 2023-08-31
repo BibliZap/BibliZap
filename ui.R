@@ -1,23 +1,23 @@
 source("snowball.R")
 
-library(shiny)
-library(dplyr)
+#library(shiny)
+# library(dplyr)
 library(shinycssloaders)
 library(shinyjs)
 library(DT) 
-library(openxlsx)
-library(tidyverse)
-library(stringr)
-library(rvest)
-library(tm)
-library(SnowballC)
-library(wordcloud)
-library(RColorBrewer)
-library(tidytext)
-library(quanteda)
-library(quanteda.textstats)
-library(htmltools)
-library(lubridate)
+# library(openxlsx)
+# library(tidyverse)
+# library(stringr)
+# library(rvest)
+# library(tm)
+# library(SnowballC)
+# library(wordcloud)
+# library(RColorBrewer)
+# library(tidytext)
+# library(quanteda)
+# library(quanteda.textstats)
+# library(htmltools)
+# library(lubridate)
 
 ui <- fluidPage(
   useShinyjs(),
@@ -85,7 +85,7 @@ ui <- fluidPage(
                                  tags$div(class = "col-md-12", # Use Bootstrap's col-md-12 class for full width
                                           tags$div(class = "input-container",
                                                    tags$label(class = "centered-label custom-label", "Enter a PMID"),
-                                                   tags$input(id = "PMID_origine", type = "text", class = "form-control custom-textinput")
+                                                   tags$input(id = "src_pmid", type = "text", class = "form-control custom-textinput")
                                           )
                                  )
                         ),
