@@ -1,11 +1,11 @@
 server <- function(input, output, session) {
   # Créer une réactive pour stocker les résultats de la recherche bibliographique
   bibliographie_reactive <- eventReactive(input$submit_button, {
-    req(input$PMID_origine)
-    PMID_origine <- input$PMID_origine
+    req(input$src_pmid)
+    src_pmid <- input$src_pmid
     
     # Call the SnowBallFunction to generate the DataFrame Bibliographie
-    Bibliographie <- SnowBall(PMID_origine)
+    Bibliographie <- SnowBall(src_pmid)
     
     
     
