@@ -1,3 +1,5 @@
+require(dplyr)
+
 server <- function(input, output, session) {
   # Créer une réactive pour stocker les résultats de la recherche bibliographique
   bibliographie_reactive <- eventReactive(input$submit_button, {
