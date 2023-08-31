@@ -5,7 +5,19 @@ server <- function(input, output, session) {
     src_pmid <- input$src_pmid
     
     # Call the SnowBallFunction to generate the DataFrame Bibliographie
-    Bibliographie <- SnowBall(src_pmid)
+    Bibliographie <- SnowBallBibliography(src_pmid) |>
+      mutate(`Is source PMID` = (PMID %in% src_pmid)) |> 
+      mutate(PMID = sprintf(
+        '<a href="https://pubmed.ncbi.nlm.nih.gov/%s/" target="_blank">%s</a>',
+        PMID, PMID)) |>
+      DT::datatable(escape = FALSE,
+                    options = list(
+                      columnDefs = list(list(targets = 'Is source PMID', visible = FALSE)))) |> 
+      formatStyle(
+        'Is source PMID',
+        target = 'row',
+        backgroundColor = styleEqual(c(0, 1), c('#00000000', '#0055ff30'))
+      )
     
     
     
