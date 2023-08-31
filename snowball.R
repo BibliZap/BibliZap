@@ -47,7 +47,7 @@ get_references = function(src_pmid, depth=1, asc=T, desc=T) {
 
 # Source the file containing the SnowBallFunction
 SnowBall <- function(PMID_origine) {
-  
+  PMID_origine<-as.numeric(PMID_origin)
   total = tibble(PMID = get_references(PMID_origine, depth=2)) |> 
     group_by(PMID) |>
     summarise(Score=n()) |>
