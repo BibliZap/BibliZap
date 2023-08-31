@@ -1,3 +1,4 @@
+
 require(tidyverse)
 
 get_references_onestep = function(src_pmid, asc=F) {
@@ -46,9 +47,9 @@ get_references = function(src_pmid, depth=1, asc=T, desc=T) {
 
 
 # Source the file containing the SnowBallFunction
-SnowBall <- function(PMID_origine) {
-  PMID_origine<-as.numeric(PMID_origin)
-  total = tibble(PMID = get_references(PMID_origine, depth=2)) |> 
+SnowBall <- function(src_pmid) {
+  src_pmid<-as.numeric(src_pmid)
+  total = tibble(PMID = get_references(src_pmid, depth=2)) |> 
     group_by(PMID) |>
     summarise(Score=n()) |>
     arrange(-Score) |> 
@@ -149,8 +150,8 @@ SnowBall <- function(PMID_origine) {
     select("PMID", "Score", "Title", "First author", "Year", "Journal", "Abstract") %>%
     slice(1:nb_lignes_extraites)
   
-  # Identifier l'index de la ligne correspondant à PMID_origine
-  index_ligne <- which(Bibliographie$PMID == PMID_origine)
+  # Identifier l'index de la ligne correspondant à src_pmid
+  index_ligne <- which(Bibliographie$PMID == src_pmid)
   
   # Mettre à jour la valeur dans la colonne Score pour l'index identifié
   if (length(index_ligne) > 0) {
