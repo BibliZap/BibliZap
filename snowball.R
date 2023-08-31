@@ -78,7 +78,7 @@ SnowBallBibliography <- function(src_pmid, depth=2) {
   ################################## Joindre revue et année
 
   #lire le html
-  features = paste("https://pubmed.ncbi.nlm.nih.gov/?term=", paste(total$PMID, collapse = "+"), "&show_snippets=off&format=pubmed&size=200", sep="") |> 
+  features = paste("https://pubmed.ncbi.nlm.nih.gov/?term=", paste(pmid_score$PMID, collapse = "+"), "&show_snippets=off&format=pubmed&size=200", sep="") |> 
     rvest::read_html() |> 
     as.character()
   
