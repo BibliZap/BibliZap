@@ -12,5 +12,5 @@ BibliZap is based on multi-level bidirectionnal citation searching, a technique 
 Hinde, S., Spackman, E. Bidirectional Citation Searching to Completion: An Exploration of Literature Searching Methods. PharmacoEconomics 33, 5–11 (2015). https://doi.org/10.1007/s40273-014-0205-3
 
 ## Credits
-BibliZap was created by Victor Leblanc, with help from Bastien Le Guellec and Raphaël Bentegac (Univ Lille)
-Faculty: Aghiles Hamroun and Rémi Lenain (Univ Lille)
+BibliZap was created by Victor Leblanc, Bastien Le Guellec and Raphaël Bentegeac (Univ Lille)
+Faculty: Aghiles Hamroun, Rémi Lenain, Emmanuel Chazard (Univ Lille)
