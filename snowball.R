@@ -9,7 +9,7 @@ library(tibble)
 
 citation_network <- function(article_list, type, token='TdUUUOLUWn9HpA7zkZnu01NDYO1gVdVz71cDjFRQPeVDCrYGKWoY')
 {
-  lens_request <- paste0('{\n\t"query": {\n\t\t"terms": {\n\t\t\t"',type,'": ["', paste0('', paste(article_list, collapse = '", "'), '"'),']\n\t\t}\n\t},\n\t"size":500\n}')
+  lens_request <- paste0('{\n\t"query": {\n\t\t"terms": {\n\t\t\t"',type,'": ["', paste0('', paste(article_list, collapse = '", "'), '"'),']\n\t\t}\n\t},\n\t"size":1000\n}')  
   data <- getLENSData(token, lens_request)
   
   
@@ -39,6 +39,7 @@ citation_network <- function(article_list, type, token='TdUUUOLUWn9HpA7zkZnu01ND
   cit_by <- unlist(record_list[["data"]][["scholarly_citations"]])
   references <- unlist(record_list[["data"]][["references"]])
   corpus<-c(cit_by,references)
+  print(length(corpus))
   return(corpus)
   
 }
@@ -69,19 +70,18 @@ SnowBall <- function(article_list, ndisp=50, depth=2, token='TdUUUOLUWn9HpA7zkZn
   print(i)}
   
   
+  
   df_final<- as.data.frame(table(corpus))
   df_final <- df_final %>% arrange(desc(Freq))
-  
   df_final <- df_final[1:ndisp,]
-
+  
   article_list<-as.character((df_final$corpus))
   colnames(df_final)<-c("lens_id", "Freq")
-
-
+  
   url <- 'https://api.lens.org/scholarly/search'
   headers <- c('Authorization' = token, 'Content-Type' = 'application/json')
   includes = c("lens_id","title", "authors", "abstract", "external_ids", "scholarly_citations", "references")
-  request <- paste0('{\n\t"query": {\n\t\t"terms": {\n\t\t\t"','lens_id','": ["', paste0('', paste(article_list, collapse = '", "'), '"'),']\n\t\t}\n\t},\n\t"include":["', paste(includes, collapse = '", "'), '"],\n\t"size":500\n}')
+  request <- paste0('{\n\t"query": {\n\t\t"terms": {\n\t\t\t"','lens_id','": ["', paste0('', paste(article_list, collapse = '", "'), '"'),']\n\t\t}\n\t},\n\t"include":["', paste(includes, collapse = '", "'), '"],\n\t"size":1000\n}')
   json = httr::POST(url = url, httr::add_headers(.headers=headers), body = request) |> httr::content("text") |> jsonlite::fromJSON()
   
   get_id = function(external_id, id_type = "doi") {
@@ -100,8 +100,8 @@ SnowBall <- function(article_list, ndisp=50, depth=2, token='TdUUUOLUWn9HpA7zkZn
     #select(authors, title, abstract) |>
     select(lens_id, title, abstract) |>
     mutate(doi = sapply(json$data$external_ids, get_id, "doi")) 
-    #mutate(first_author = sapply(json$data$authors, get_first_author)) %>% 
-    #select(-authors) %>% 
+  #mutate(first_author = sapply(json$data$authors, get_first_author)) %>% 
+  #select(-authors) %>% 
   df_merged <- merge(df_final,complete_articles,by="lens_id")
   df_merged <- df_merged %>% arrange(desc(Freq))
 
