@@ -84,8 +84,16 @@ ui <- fluidPage(
                         tags$div(class = "row",
                                  tags$div(class = "col-md-12", # Use Bootstrap's col-md-12 class for full width
                                           tags$div(class = "input-container",
-                                                   tags$label(class = "centered-label custom-label", "Enter a PMID"),
-                                                   tags$input(id = "src_pmid", type = "text", class = "form-control custom-textinput")
+                                                   tags$label(class = "centered-label custom-label", "Enter a PMID, DOI or Lens ID"),
+                                                   tags$input(id = "PMID_origine", type = "text", class = "form-control custom-textinput")
+                                          )
+                                 )
+                        ),
+                        tags$div(class = "row",
+                                 tags$div(class = "col-md-12", # Utilisez la classe col-md-12 de Bootstrap pour la largeur totale
+                                          tags$div(class = "slider-container",
+                                                   tags$label(class = "button-container", "Select Depth (1-5)"),
+                                                   sliderInput("depth_slider", "Depth:", min = 1, max = 5, value = 1)
                                           )
                                  )
                         ),
@@ -145,4 +153,5 @@ ui <- fluidPage(
                              )
                     )
                   ))
+
 
