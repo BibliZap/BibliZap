@@ -1,112 +1,120 @@
-require(tidyverse)
+#v2.0 
+#Now relying on Lens.org
+#Interaction with Lens.org inspired by github.com/nealhaddaway/citationchaser
 
-get_references_onestep = function(src_pmid, asc=F) {
-  MAX_URL_SIZE_REFNUMBER=325
-  splitter = function(vec, chunksize) {
-    split(vec, ceiling(seq_along(vec)/chunksize))
-  }
+library(httr)
+library(tidyr)
+library(dplyr)
+library(maditr)
+library(tibble)
+
+citation_network <- function(article_list, type, token='TdUUUOLUWn9HpA7zkZnu01NDYO1gVdVz71cDjFRQPeVDCrYGKWoY')
+{
+  lens_request <- paste0('{\n\t"query": {\n\t\t"terms": {\n\t\t\t"',type,'": ["', paste0('', paste(article_list, collapse = '", "'), '"'),']\n\t\t}\n\t},\n\t"size":500\n}')
+  data <- getLENSData(token, lens_request)
   
-  get_references_onestep_unsafe = function(src_pmid, asc) {
-    url = ifelse(asc,
-                 "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pubmed&linkname=pubmed_pubmed_citedin&id=",
-                 "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/elink.fcgi?dbfrom=pubmed&linkname=pubmed_pubmed_refs&id=")
-    url |>
-      paste(paste(src_pmid, collapse = "&id="), sep="") |> 
-      xml2::read_html() |> 
-      xml2::xml_find_all(".//id") |> 
-      xml2::xml_text()
-  }
   
-  onestep = src_pmid |>
-    splitter(MAX_URL_SIZE_REFNUMBER) |>
-    lapply(get_references_onestep_unsafe, asc) |> 
-    unlist(recursive = T) |> 
-    unname()
+  # report requests remaining within the limit (currently 50/min)
+  requests_remaining <- data[["headers"]][["x-rate-limit-remaining-request-per-minute"]]
+  print(paste0('Remaining requests = ', requests_remaining))
   
-  return(tail(onestep, n = length(onestep) - length(src_pmid)))
+  # extract the JSON content of the response
+  record_json <- httr::content(data, "text")
+  
+  # convert json output from article search to list
+  record_list <- jsonlite::fromJSON(record_json) 
+  print('Results converted to df from JSON output:')
+  
+  # report number of input articles returned
+  input_number <- record_list[["total"]]
+  
+  # list input article lens IDs (for later use)
+  articles_id <- record_list[["data"]][["lens_id"]]
+  print('Returned records from input request:')
+
+  
+  ### search for references of input articles
+  
+  # references per article
+  
+  cit_by <- unlist(record_list[["data"]][["scholarly_citations"]])
+  references <- unlist(record_list[["data"]][["references"]])
+  corpus<-c(cit_by,references)
+  return(corpus)
+  
 }
 
-# Recursive function that gets pmid references for a source article
-get_references = function(src_pmid, depth=1, asc=T, desc=T) {
-  if(depth<=0 || (asc==F && desc==F)) {
-    return(src_pmid)
-  } else {
-    ref_asc = c()
-    ref_desc = c()
-    if(asc) {
-      ref_asc = get_references(src_pmid, depth-1, asc, desc) |> get_references_onestep(asc=T)
-    }
-    if(desc) {
-      ref_desc = get_references(src_pmid, depth-1, asc, desc) |> get_references_onestep(asc=F)
-    }
-    
-    return(c(ref_asc, ref_desc))
+
+SnowBall <- function(article_list, depth=2, token='TdUUUOLUWn9HpA7zkZnu01NDYO1gVdVz71cDjFRQPeVDCrYGKWoY') {
+  print(depth)
+  if (depth>5)
+  {type="error"}
+  article_list<-as.String(article_list)
+  if (grepl("10.",article_list, fixed=TRUE))
+      {type='DOI'}
+  else if (grepl("-", article_list, fixed=TRUE))
+  {type="lens_id"}
+  else
+  {type='PMID'}
+  print(type)
+  article_list <- trimws(unlist(strsplit(article_list, '[,]')))
+  ## input article search
+  # build query for input article search
+  corpus<- citation_network(article_list, type)
+  type='lens_id'
+  i=1
+  print(i)
+  while(i< depth)
+  {corpus<- citation_network(corpus, type)
+  i<-i+1
+  print(i)}
+  
+  
+  df_final<- as.data.frame(table(corpus))
+  df_final <- df_final %>% arrange(desc(Freq))
+  
+  df_final <- df_final[1:500,]
+
+  article_list<-as.character((df_final$corpus))
+  colnames(df_final)<-c("lens_id", "Freq")
+
+
+  url <- 'https://api.lens.org/scholarly/search'
+  headers <- c('Authorization' = token, 'Content-Type' = 'application/json')
+  includes = c("lens_id","title", "authors", "abstract", "external_ids", "scholarly_citations", "references")
+  request <- paste0('{\n\t"query": {\n\t\t"terms": {\n\t\t\t"','lens_id','": ["', paste0('', paste(article_list, collapse = '", "'), '"'),']\n\t\t}\n\t},\n\t"include":["', paste(includes, collapse = '", "'), '"],\n\t"size":500\n}')
+  json = httr::POST(url = url, httr::add_headers(.headers=headers), body = request) |> httr::content("text") |> jsonlite::fromJSON()
+  
+  get_id = function(external_id, id_type = "doi") {
+    external_id |>
+      filter(type == id_type) |>
+      pull(value)
   }
+  
+  get_first_author = function(authors) {
+    authors %>%
+      mutate(name = paste(first_name, last_name)) %>%
+      filter(row_number()==1) %>% pull(name)
+  }
+  
+  complete_articles = json$data |> as_tibble() |>
+    #select(authors, title, abstract) |>
+    select(lens_id, title, abstract) |>
+    mutate(doi = sapply(json$data$external_ids, get_id, "doi")) 
+    #mutate(first_author = sapply(json$data$authors, get_first_author)) %>% 
+    #select(-authors) %>% 
+  df_merged <- merge(df_final,complete_articles,by="lens_id")
+  df_merged <- df_merged %>% arrange(desc(Freq))
+
+  return(df_merged)
+
 }
 
-get_authors = function(features) {
-  # Extraction de AU
-  # Diviser le texte en au_blocs correspondant à chaque article
-  au_blocs <- strsplit(features, "PMID- ")[[1]]
-  au_blocs <- au_blocs[-1]  # Supprimer le premier élément vide
-  
-  # Initialiser un vecteur pour stocker les noms d'auteurs
-  auteurs <- character(length(au_blocs))
-  
-  # Parcourir chaque bloc et extraire le premier nom d'auteur
-  for (i in 1:length(au_blocs)) {
-    bloc <- au_blocs[i]
-    match_start <- regexpr("AU  - (.+)", bloc, perl = TRUE)
-    if (match_start != -1) {
-      match <- regmatches(bloc, match_start)[[1]]
-      auteurs[i] <- match
-    } else {
-      auteurs[i] <- ""
-    }
-  }
-  
-  auteurs
-}
 
-SnowBallBibliography <- function(src_pmid, depth=2) {
-  pmid_score = tibble(PMID = get_references(src_pmid, depth=depth)) |> 
-    group_by(PMID) |>
-    summarise(Score=n()) |> # Establish score based for each article based on the number of occurrences
-    arrange(-Score) |>
-    head(200) # Limit the articles to the 200 best according to score
-  
-  ################################## Joindre revue et année
 
-  #lire le html
-  features = paste("https://pubmed.ncbi.nlm.nih.gov/?term=", paste(pmid_score$PMID, collapse = "+"), "&show_snippets=off&format=pubmed&size=200", sep="") |> 
-    rvest::read_html() |> 
-    as.character()
-  
-  df_features = tibble(PMID = features |> # re-extraction of PMID, as a safety measure if order or count has changed
-               str_extract_all("(?<=PMID- ).+") |>
-               unlist(),
-             Year = features |> 
-               str_extract_all("(?<=DP  - )\\d{4}") |> 
-               unlist(),
-             Journal = features |> 
-               str_extract_all("(?<=JT  - ).+") |> 
-               unlist(),
-             Title = features |> 
-               str_extract_all("(?<=TI  - )([\\s\\S]*?)(?=[A-Z]{2,}\\s{1,}-)") |> 
-               unlist() |> 
-               str_replace("\r\n", " ") |> 
-               str_replace(" +", " "),
-             Abstract = strsplit(features, "PMID- ")[[1]][-1] |>
-               str_extract("(?<=AB  - )([\\s\\S]*?)(?=[A-Z]{2,}\\s{1,}-)"),
-             `First author` = get_authors(features) |> 
-               str_remove_all("^[A-Z]+\\s*-\\s+") |> 
-               str_remove_all("\\r") |> 
-               str_replace("\\s+", " ") |> 
-               trimws(which="left"),
-             )
-  
-  #FINAL
-  pmid_score |> 
-    left_join(df_features, by="PMID") |> 
-    arrange(-Score) 
+
+getLENSData <- function(token, query){
+  url <- 'https://api.lens.org/scholarly/search'
+  headers <- c('Authorization' = token, 'Content-Type' = 'application/json')
+  httr::POST(url = url, httr::add_headers(.headers=headers), body = query)
 }
