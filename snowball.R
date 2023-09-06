@@ -1,6 +1,5 @@
 #v2.0 
 #Now relying on Lens.org
-#Interaction with Lens.org inspired by github.com/nealhaddaway/citationchaser
 
 library(httr)
 library(tidyr)
@@ -45,7 +44,7 @@ citation_network <- function(article_list, type, token='TdUUUOLUWn9HpA7zkZnu01ND
 }
 
 
-SnowBall <- function(article_list, depth=2, token='TdUUUOLUWn9HpA7zkZnu01NDYO1gVdVz71cDjFRQPeVDCrYGKWoY') {
+SnowBall <- function(article_list, ndisp=50, depth=2, token='TdUUUOLUWn9HpA7zkZnu01NDYO1gVdVz71cDjFRQPeVDCrYGKWoY') {
   print(depth)
   if (depth>5)
   {type="error"}
@@ -73,7 +72,7 @@ SnowBall <- function(article_list, depth=2, token='TdUUUOLUWn9HpA7zkZnu01NDYO1gV
   df_final<- as.data.frame(table(corpus))
   df_final <- df_final %>% arrange(desc(Freq))
   
-  df_final <- df_final[1:500,]
+  df_final <- df_final[1:ndisp,]
 
   article_list<-as.character((df_final$corpus))
   colnames(df_final)<-c("lens_id", "Freq")
