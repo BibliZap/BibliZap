@@ -8,9 +8,10 @@ server <- function(input, output, session) {
     req(input$PMID_origine)
     PMID_origine <- input$PMID_origine
     depth <- input$depth_slider
+    ndisp <- input$disp_slider
     
     # Call the SnowBallFunction to generate the DataFrame Bibliographie
-    Bibliographie <- SnowBall(PMID_origine, depth=depth)
+    Bibliographie <- SnowBall(PMID_origine, ndisp=ndisp, depth=depth)
     
     
     
