@@ -24,14 +24,11 @@ make_request_body_id_line = function(id_df, id_type) {
     paste0('["', paste(id, collapse = '", "'), '"]')
   }
   
-  id_df_type = id_df |>
-    filter(type==id_type) 
-  
-  if(nrow(id_df_type) == 0) {
+  if(nrow(id_df) == 0) {
     return(NULL);
   }
   
-  id_list_concat = id_df_type |>
+  id_list_concat = id_df |>
     pull(id) |>
     concat_id()
   
@@ -45,9 +42,9 @@ make_request_body = function(id_line, includes=NULL) {
     return(NULL)
   }
   if(is.null(includes)) {
-    request_body = paste0('{\n\t"query": {\n\t\t"terms": {\n', id_line,'\n\t\t}\n\t},\n\t"size":500\n}')
+    request_body = paste0('{\n\t"query": {\n\t\t"terms": {\n', id_line,'\n\t\t}\n\t},\n\t"size":1000\n}')
   }
-  request_body = paste0('{\n\t"query": {\n\t\t"terms": {\n', id_line,'\n\t\t}\n\t},\n\t"include":["', paste(includes, collapse = '", "'), '"],\n\t"size":500\n}')
+  request_body = paste0('{\n\t"query": {\n\t\t"terms": {\n', id_line,'\n\t\t}\n\t},\n\t"include":["', paste(includes, collapse = '", "'), '"],\n\t"size":1000\n}')
   return(request_body)
 }
 
@@ -59,12 +56,21 @@ request_lens_df = function(id_list, includes=NULL, api_key='TdUUUOLUWn9HpA7zkZnu
   handled_id_types = c("lens_id", "PMID", "doi")
   request_bodies = list()
   for(id_type in handled_id_types) {
-    request_bodies[[id_type]] = make_request_body_id_line(id_df, id_type) |>
-      make_request_body(includes)
+    id_df_type = id_df |> filter(type == id_type)
+    if(nrow(id_df_type) == 0) {
+      next;
+    }
+    
+    id_df_type_chunks=split(id_df_type, (as.numeric(rownames(id_df_type))-1) %/% 1000)
+    for(i in 1:length(id_df_type_chunks)) {
+      request_bodies[[paste(id_type,i )]] = make_request_body_id_line(id_df_type_chunks[[i]], id_type) |> 
+        make_request_body(includes)
+    }
   }
   
   data_list = list()
   for(i in 1:length(request_bodies)) {
+    print(i)
     json = request_bodies[[i]] |>
       request_lens(api_key) |>
       httr::content("text") |>
