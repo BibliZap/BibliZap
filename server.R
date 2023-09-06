@@ -2,24 +2,15 @@ require(dplyr)
 
 server <- function(input, output, session) {
   # Créer une réactive pour stocker les résultats de la recherche bibliographique
+  
+  
   bibliographie_reactive <- eventReactive(input$submit_button, {
-    req(input$src_pmid)
-    src_pmid <- input$src_pmid
+    req(input$PMID_origine)
+    PMID_origine <- input$PMID_origine
+    depth <- input$depth_slider
     
     # Call the SnowBallFunction to generate the DataFrame Bibliographie
-    Bibliographie <- SnowBallBibliography(src_pmid) |>
-      mutate(`Is source PMID` = (PMID %in% src_pmid)) |> 
-      mutate(PMID = sprintf(
-        '<a href="https://pubmed.ncbi.nlm.nih.gov/%s/" target="_blank">%s</a>',
-        PMID, PMID)) |>
-      DT::datatable(escape = FALSE,
-                    options = list(
-                      columnDefs = list(list(targets = 'Is source PMID', visible = FALSE)))) |> 
-      formatStyle(
-        'Is source PMID',
-        target = 'row',
-        backgroundColor = styleEqual(c(0, 1), c('#00000000', '#0055ff30'))
-      )
+    Bibliographie <- SnowBall(PMID_origine, depth=depth)
     
     
     
@@ -45,7 +36,7 @@ server <- function(input, output, session) {
       Bibliographie_to_dl$PMID <- gsub("<a.*?>(\\d+)</a>", "\\1", Bibliographie_to_dl$PMID)
       
       # Save the data to an Excel file
-      writexl::write_xlsx(x = Bibliographie_to_dl, path = file)
+      write.xlsx(Bibliographie_to_dl, file, row.names = FALSE)
     }
   )
   
