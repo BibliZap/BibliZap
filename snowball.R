@@ -48,7 +48,7 @@ SnowBall <- function(article_list, ndisp=50, depth=2, token='TdUUUOLUWn9HpA7zkZn
   print(depth)
   if (depth>5)
   {type="error"}
-  article_list<-as.String(article_list)
+  article_list<-toString(article_list)
   if (grepl("10.",article_list, fixed=TRUE))
       {type='DOI'}
   else if (grepl("-", article_list, fixed=TRUE))
