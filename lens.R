@@ -70,9 +70,16 @@ request_lens_df = function(id_list, includes=NULL, api_key='TdUUUOLUWn9HpA7zkZnu
   
   data_list = list()
   for(i in 1:length(request_bodies)) {
-    print(i)
-    json = request_bodies[[i]] |>
-      request_lens(api_key) |>
+    r = request_bodies[[i]] |>
+      request_lens(api_key)
+    
+    remaining_requests = r[["headers"]][["x-rate-limit-remaining-request-per-minute"]]
+    print(remaining_requests)
+    if(remaining_requests == 1) {
+      Sys.sleep(60)
+    }
+    
+    json = r |>
       httr::content("text") |>
       jsonlite::fromJSON()
     
@@ -82,4 +89,18 @@ request_lens_df = function(id_list, includes=NULL, api_key='TdUUUOLUWn9HpA7zkZnu
   data = bind_rows(data_list)
   
   data
+}
+
+
+get_id = function(external_id, id_type = "doi") {
+  external_id |>
+    filter(type == id_type) |>
+    pull(value) |> 
+    magrittr::extract(1)
+}
+
+get_first_author = function(authors) {
+  authors %>%
+    mutate(name = paste(first_name, last_name)) %>%
+    filter(row_number()==1) %>% pull(name)
 }
