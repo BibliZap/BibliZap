@@ -9,7 +9,7 @@ request_lens = function(request_body, api_key) {
 }
 
 get_id_type = function(id_list) {
-  type_list = ifelse(str_detect(id_list, "^...-...-...-...$"),
+  type_list = ifelse(str_detect(id_list, "^...-...-...-...-...$"),
                      "lens_id",
               ifelse(str_detect(id_list, "^10\\."),
                     "doi",
