@@ -88,6 +88,11 @@ request_lens_df = function(id_list, includes=NULL, api_key='TdUUUOLUWn9HpA7zkZnu
   
   data = bind_rows(data_list)
   
+  missing_colnames = includes |> setdiff(names(data))
+  for(missing_colname in missing_colnames) {
+    data[missing_colname] = NA
+  }
+  
   data
 }
 
