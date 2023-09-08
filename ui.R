@@ -1,30 +1,14 @@
-source("snowball.R")
+require(shinycssloaders)
+require(shinyjs)
+require(DT) 
 
-#library(shiny)
-# library(dplyr)
-library(shinycssloaders)
-library(shinyjs)
-library(DT) 
-# library(openxlsx)
-# library(tidyverse)
-# library(stringr)
-# library(rvest)
-# library(tm)
-# library(SnowballC)
-# library(wordcloud)
-# library(RColorBrewer)
-# library(tidytext)
-# library(quanteda)
-# library(quanteda.textstats)
-# library(htmltools)
-# library(lubridate)
+source("snowball.R")
 
 ui <- fluidPage(
   useShinyjs(),
   tags$head(
     tags$style(
       HTML('
-        /* ... Autres styles ... */
         /* Nouvelle classe pour centrer les éléments verticalement */
         .center-vertically {
           display: flex;
@@ -32,7 +16,7 @@ ui <- fluidPage(
           justify-content: center;
           height: 100%;
         }
-         /* Nouvelle classe pour centrer les éléments verticalement et horizontalement */
+        /* Nouvelle classe pour centrer les éléments verticalement et horizontalement */
         .center-vertically-horiz {
           margin-top: 80px;
           display: flex;
@@ -42,34 +26,34 @@ ui <- fluidPage(
         }
         
         /* Ajouter de lespace entre les deux div */
-             .input-container {
-    margin-top: 40px; /* Add margin at the top */
-    margin-bottom: 15px;
-    text-align: center; /* Center the content */
-}
+        .input-container {
+          margin-top: 40px; /* Add margin at the top */
+          margin-bottom: 15px;
+          text-align: center; /* Center the content */
+        }
            
-           /* Réduire la largeur du bouton et le centrer */
-             .custom-button {
-               width: 50%;
-               display: flex;
-               justify-content: center;
-               margin: 0 auto;
-             }
-           
-           /* Ajuster la taille de la police */
-             .custom-label {
-               font-size: 18px;
-             }
-           .custom-button-label {
-             font-size: 18px;
-           }
-           
-           /* Réduire la largeur du champ de saisie et le centrer */
-             .custom-textinput {
-               width: 45%; /* Adjust the width as needed */
-                 margin: 0 auto;
-             }
-           /* ... Autres styles ... */
+       /* Réduire la largeur du bouton et le centrer */
+         .custom-button {
+           width: 50%;
+           display: flex;
+           justify-content: center;
+           margin: 0 auto;
+         }
+       
+       /* Ajuster la taille de la police */
+         .custom-label {
+           font-size: 18px;
+         }
+       .custom-button-label {
+         font-size: 18px;
+       }
+       
+       /* Réduire la largeur du champ de saisie et le centrer */
+         .custom-textinput {
+           width: 45%; /* Adjust the width as needed */
+             margin: 0 auto;
+         }
+       /* ... Autres styles ... */
              ')
     ),
     tags$script(

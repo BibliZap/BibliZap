@@ -1,6 +1,3 @@
-#v2.0 
-#Now relying on Lens.org
-
 library(httr)
 library(tidyr)
 library(dplyr)

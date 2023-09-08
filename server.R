@@ -3,7 +3,6 @@ require(dplyr)
 server <- function(input, output, session) {
   # Créer une réactive pour stocker les résultats de la recherche bibliographique
   
-  
   bibliographie_reactive <- eventReactive(input$submit_button, {
     req(input$PMID_origine)
     PMID_origine <- input$PMID_origine
