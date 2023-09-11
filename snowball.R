@@ -24,6 +24,7 @@ citation_network <- function(article_list, api_key='TdUUUOLUWn9HpA7zkZnu01NDYO1g
 
 
 SnowBall <- function(article_list, ndisp=50, depth=2, api_key='TdUUUOLUWn9HpA7zkZnu01NDYO1gVdVz71cDjFRQPeVDCrYGKWoY') {
+  article_list<- gsub(" ", "", article_list)
   corpus_list = list()
   corpus_list[[1]] = article_list
 
