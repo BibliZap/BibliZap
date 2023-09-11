@@ -76,8 +76,8 @@ ui <- fluidPage(
                         tags$div(class = "row",
                                  tags$div(class = "col-md-12", # Utilisez la classe col-md-12 de Bootstrap pour la largeur totale
                                           tags$div(class = "slider-container",
-                                                   tags$label(class = "button-container", "Select Depth (1-5)"),
-                                                   sliderInput("depth_slider", "Depth:", min = 1, max = 5, value = 2)
+                                                   tags$label(class = "button-container", "Select Depth (1-3)"),
+                                                   sliderInput("depth_slider", "Depth:", min = 1, max = 3, value = 2)
                                           )
                                  )
                         ),
