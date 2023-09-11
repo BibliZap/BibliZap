@@ -63,7 +63,7 @@ ui <- fluidPage(
   # En-tête personnalisée
   div(class = "custom-header center-vertically",
       tags$div(class = "navbar navbar-center", 
-               img(src = "logo_BiblioZap_NB.png", height = "400px", width = "800px", class= "center-vertically"),
+               img(src = "logo.png", height = "400px", width = "800px", class= "center-vertically"),
                tags$div(class = "container-fluid", # Use Bootstrap's container-fluid class
                         tags$div(class = "row",
                                  tags$div(class = "col-md-12", # Use Bootstrap's col-md-12 class for full width
