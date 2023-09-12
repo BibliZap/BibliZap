@@ -10,12 +10,17 @@ citation_network <- function(id_list, api_key='TdUUUOLUWn9HpA7zkZnu01NDYO1gVdVz7
   if(length(id_list) == 0 || is.na(id_list[1])) {
     return(NA)
   }
-  dd = request_lens_df(id_list, api_key=api_key)
+  
+  print(sprintf('Fetching references and citations for %s articles', length(id_list)))
+
+  dd = request_lens_df(id_list,
+                       includes = c("lens_id", "references", "scholarly_citations"),
+                       api_key=api_key)
   
   cit_by <- unlist(dd[["scholarly_citations"]])
   references <- unlist(dd[["references"]])
   corpus = c(cit_by,references)
-  print(length(corpus))
+  
   if(is.null(corpus)) {
     return(NA)
   }
@@ -52,7 +57,7 @@ snowball_bibliography <- function(id_list, ndisp=50, depth=2, api_key='TdUUUOLUW
   corpus_list[[1]] = id_list
 
   for(i in 1:depth) {
-    print(i)
+    print(sprintf('Depth %d', i))
     corpus_list[[i+1]] = citation_network(corpus_list[[i]], api_key=api_key)
   }
   

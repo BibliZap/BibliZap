@@ -74,7 +74,7 @@ request_lens_df = function(id_list, includes=NULL, api_key='TdUUUOLUWn9HpA7zkZnu
       request_lens(api_key)
     
     remaining_requests = r[["headers"]][["x-rate-limit-remaining-request-per-minute"]]
-    print(remaining_requests)
+    print(sprintf('%s requests remaining', remaining_requests))
     if(remaining_requests == 1) {
       Sys.sleep(60)
     }
