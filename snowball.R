@@ -70,7 +70,7 @@ snowball_bibliography <- function(id_list, ndisp=50, depth=2, api_key='TdUUUOLUW
   df_freq = table(corpus) |> 
     as_tibble() |> 
     arrange(desc(n)) |>
-    filter(row_number() <= ndisp) |> 
+    slice(1:ndisp) |>
     rename("lens_id" = "corpus", "Freq" = "n")
   
   includes = c("lens_id","title", "authors", "abstract", "external_ids", "scholarly_citations", "references", "source", "year_published")
