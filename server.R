@@ -20,6 +20,16 @@ server <- function(input, output, session) {
     return(bibliography)
   })
 
+  observe({
+    shinyjs::runjs(
+      '$("#id_list").on("keydown", function(e) {
+        if (e.keyCode === 13) { // 13 correspond à la touche "Entrée"
+          $("#submit_button").click(); // Déclencher le clic sur le bouton de soumission
+        }
+      });'
+    )
+  })
+
   # Make bibliography_table reactive
   output$bibliography_table <- renderDT({
     bibliography_reactive() |> 
