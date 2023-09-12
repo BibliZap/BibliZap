@@ -73,18 +73,24 @@ snowball_bibliography <- function(id_list, ndisp=50, depth=2, api_key='TdUUUOLUW
     filter(row_number() <= ndisp) |> 
     rename("lens_id" = "corpus", "Freq" = "n")
   
-  includes = c("lens_id","title", "authors", "abstract", "external_ids", "scholarly_citations", "references")
-
+  includes = c("lens_id","title", "authors", "abstract", "external_ids", "scholarly_citations", "references", "source", "year_published")
+  
   complete_articles = df_freq$lens_id |>
     as.character() |> 
     request_lens_df(includes) |>
     as_tibble() |>
     mutate(doi = sapply(external_ids, get_id, "doi")) |> 
+    mutate(journal = source$title) |>
     mutate(pmid = sapply(external_ids, get_id, "pmid")) |>
     left_join(df_freq, by="lens_id") |> 
     arrange(-Freq) |> 
     pubmed_complete() |> 
-    select(lens_id, title, abstract, Freq)
+    select(authors,year_published, journal, title, abstract, lens_id, pmid, Freq)
+  
+  for (i in 1:ndisp){
+    complete_articles$authors[i]<-paste0(complete_articles$authors[[i]][[3]][[1]], ". ",complete_articles$authors[[i]][[2]][[1]])
+  }
+  
 
   return(complete_articles)
 }
