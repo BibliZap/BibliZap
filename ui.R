@@ -69,7 +69,7 @@ ui <- fluidPage(
                                  tags$div(class = "col-md-12", # Use Bootstrap's col-md-12 class for full width
                                           tags$div(class = "input-container",
                                                    tags$label(class = "centered-label custom-label", "Enter a PMID, DOI or Lens ID"),
-                                                   tags$input(id = "PMID_origine", type = "text", class = "form-control custom-textinput")
+                                                   tags$input(id = "id_list", type = "text", class = "form-control custom-textinput")
                                           )
                                  )
                         ),

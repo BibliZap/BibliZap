@@ -6,11 +6,11 @@ library(tibble)
 
 source("lens.R")
 
-citation_network <- function(article_list, api_key='TdUUUOLUWn9HpA7zkZnu01NDYO1gVdVz71cDjFRQPeVDCrYGKWoY') {
-  if(length(article_list) == 0 || is.na(article_list[1])) {
+citation_network <- function(id_list, api_key='TdUUUOLUWn9HpA7zkZnu01NDYO1gVdVz71cDjFRQPeVDCrYGKWoY') {
+  if(length(id_list) == 0 || is.na(id_list[1])) {
     return(NA)
   }
-  dd = request_lens_df(article_list, api_key=api_key)
+  dd = request_lens_df(id_list, api_key=api_key)
   
   cit_by <- unlist(dd[["scholarly_citations"]])
   references <- unlist(dd[["references"]])
@@ -46,10 +46,10 @@ pubmed_complete = function(data) {
   pubmed_complete
 }
 
-SnowBall <- function(article_list, ndisp=50, depth=2, api_key='TdUUUOLUWn9HpA7zkZnu01NDYO1gVdVz71cDjFRQPeVDCrYGKWoY') {
-  article_list<- gsub(" ", "", article_list)
+SnowBall <- function(id_list, ndisp=50, depth=2, api_key='TdUUUOLUWn9HpA7zkZnu01NDYO1gVdVz71cDjFRQPeVDCrYGKWoY') {
+  id_list<- gsub(" ", "", id_list)
   corpus_list = list()
-  corpus_list[[1]] = article_list
+  corpus_list[[1]] = id_list
 
   for(i in 1:depth) {
     print(i)

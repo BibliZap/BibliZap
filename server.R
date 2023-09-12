@@ -4,13 +4,13 @@ server <- function(input, output, session) {
   # Créer une réactive pour stocker les résultats de la recherche bibliographique
   
   bibliography_reactive <- eventReactive(input$submit_button, {
-    req(input$PMID_origine)
-    PMID_origine <- input$PMID_origine
+    req(input$id_list)
+    id_list <- input$id_list
     depth <- input$depth_slider
     ndisp <- input$ndisp_slider
     
     # Call the SnowBallFunction to generate the DataFrame bibliography
-    bibliography <- SnowBall(PMID_origine, ndisp=ndisp, depth=depth)
+    bibliography <- SnowBall(id_list, ndisp=ndisp, depth=depth)
     
     # Stocker la variable bibliography dans l'environnement global
     assign("bibliography", bibliography, envir = .GlobalEnv)
