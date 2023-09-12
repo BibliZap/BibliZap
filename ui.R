@@ -103,8 +103,8 @@ ui <- fluidPage(
       tabsetPanel(id = "tabs",tags$style(HTML(".nav-tabs > li > a { color: black !important; }")),
                   tabPanel("Bibliography",
                            # Spinner to indicate loading
-                           withSpinner(DTOutput("bibliographie_table"), type = 2, color = "black", color.background = "white"),
-                           downloadButton("download_bibliographie", "Download bibliography")
+                           withSpinner(DTOutput("bibliography_table"), type = 2, color = "black", color.background = "white"),
+                           downloadButton("download_bibliography", "Download bibliography")
                   ),
                   tabPanel("Specific words",
                            p("Available soon")
