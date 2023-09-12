@@ -22,7 +22,7 @@ server <- function(input, output, session) {
     bibliography_reactive() |> 
       mutate(Lens = sprintf('<a href="https://www.lens.org/lens/scholar/article/%s/" target="_blank">%s</a>', lens_id, lens_id)) |> 
       rename(Title = title, Abstract = abstract) |> 
-      select(Lens, Title, Abstract) |> 
+      select(Lens, Title, Abstract, Score) |> 
       DT::datatable(escape=F)
   })
   
