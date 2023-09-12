@@ -2,6 +2,10 @@
 # BibliZap
 Recursivity-based related articles search engine
 
+## BibliZap alpha demo (v0.1 sept 12th 2023)
+[BibliZap demo](https://demo.biblizap.org)
+You may encounter bugs or traffic limits: we are currently working to improve BibliZap!
+
 ## Principle
 BibliZap aims to catalog articles similar to the source article based on both upward and downward citations. Downward citations correspond to the references of the articles (their bibliography). Upward citations correspond to the articles citing the source article. Here is a diagram summarizing the process:
 ![Principle of BibliZap](www/BibliZapFig1.svg)
