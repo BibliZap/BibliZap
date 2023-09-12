@@ -21,7 +21,7 @@ server <- function(input, output, session) {
   output$bibliography_table <- renderDT({
     bibliography_reactive() |> 
       mutate(Lens = sprintf('<a href="https://www.lens.org/lens/scholar/article/%s/" target="_blank">%s</a>', lens_id, lens_id)) |> 
-      rename(Title = title, Abstract = abstract) |> 
+      rename(Title = title, Abstract = abstract, Score = Freq) |> 
       select(Lens, Title, Abstract, Score) |> 
       DT::datatable(escape=F)
   })

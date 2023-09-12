@@ -83,7 +83,7 @@ snowball_bibliography <- function(id_list, ndisp=50, depth=2, api_key='TdUUUOLUW
     left_join(df_freq, by="lens_id") |> 
     arrange(-Freq) |> 
     pubmed_complete() |> 
-    select(lens_id, title, abstract)
+    select(lens_id, title, abstract, Freq)
 
   return(complete_articles)
 }
