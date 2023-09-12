@@ -5,7 +5,10 @@ source("snowball.R")
 server <- function(input, output, session) {
   bibliography_reactive <- eventReactive(input$submit_button, {
     req(input$id_list)
-    id_list <- input$id_list
+    id_list <- input$id_list |>
+      str_split_1(",") |>
+      trimws()
+    
     depth <- input$depth_slider
     ndisp <- input$ndisp_slider
     
@@ -20,7 +23,7 @@ server <- function(input, output, session) {
   # Make bibliography_table reactive
   output$bibliography_table <- renderDT({
     bibliography_reactive() |> 
-      mutate(Lens = sprintf('<a href="https://www.lens.org/lens/scholar/article/%s/" target="_blank">%s</a>', lens_id, lens_id)) |> 
+      mutate(Lens = sprintf('<a href="https://www.lens.org/lens/scholar/article/%s/main" target="_blank">%s</a>', lens_id, lens_id)) |> 
       rename(Title = title, Abstract = abstract, Score = Freq) |> 
       select(Lens, Title, Abstract, Score) |> 
       DT::datatable(escape=F)
