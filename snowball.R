@@ -46,7 +46,7 @@ pubmed_complete = function(data) {
   pubmed_complete
 }
 
-SnowBall <- function(id_list, ndisp=50, depth=2, api_key='TdUUUOLUWn9HpA7zkZnu01NDYO1gVdVz71cDjFRQPeVDCrYGKWoY') {
+snowball_bibliography <- function(id_list, ndisp=50, depth=2, api_key='TdUUUOLUWn9HpA7zkZnu01NDYO1gVdVz71cDjFRQPeVDCrYGKWoY') {
   id_list<- gsub(" ", "", id_list)
   corpus_list = list()
   corpus_list[[1]] = id_list

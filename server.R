@@ -1,24 +1,23 @@
 require(dplyr)
 
+source("snowball.R")
+
 server <- function(input, output, session) {
-  # Créer une réactive pour stocker les résultats de la recherche bibliographique
-  
   bibliography_reactive <- eventReactive(input$submit_button, {
     req(input$id_list)
     id_list <- input$id_list
     depth <- input$depth_slider
     ndisp <- input$ndisp_slider
     
-    # Call the SnowBallFunction to generate the DataFrame bibliography
-    bibliography <- SnowBall(id_list, ndisp=ndisp, depth=depth)
+    bibliography <- snowball_bibliography(id_list, ndisp=ndisp, depth=depth)
     
-    # Stocker la variable bibliography dans l'environnement global
+    # Store bibliography in global environment
     assign("bibliography", bibliography, envir = .GlobalEnv)
     
     return(bibliography)
   })
-  
-  # Rendre la table "bibliography_table" réactive à la recherche
+
+  # Make bibliography_table reactive
   output$bibliography_table <- renderDT({
     bibliography_reactive() |> 
       mutate(Lens = sprintf('<a href="https://www.lens.org/lens/scholar/article/%s/" target="_blank">%s</a>', lens_id, lens_id)) |> 
@@ -27,7 +26,7 @@ server <- function(input, output, session) {
       DT::datatable(escape=F)
   })
   
-  # Gérer le téléchargement de la bibliography au format Excel (.xlsx)
+  # Download bibliography as Excel (.xlsx)
   output$download_bibliography <- downloadHandler(
     filename = function() {
       paste("BibliZap-", format(Sys.time(), "%Y%m%d%H%M%S"), ".xlsx", sep = "")
@@ -49,7 +48,7 @@ server <- function(input, output, session) {
     # Call the function to get specific words
     mots_specifiques_resultat <- analyse_mots_specifiques(bibliography)
     output$mots_specifiques_plot <- renderPlot({
-      # Code pour créer le plot basé sur mots_specifiques_resultat
+      # Create plot for specific words
       plot(mots_specifiques_resultat, main = "Specific words")
     })
   })
