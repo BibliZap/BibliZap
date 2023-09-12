@@ -22,6 +22,29 @@ citation_network <- function(article_list, api_key='TdUUUOLUWn9HpA7zkZnu01NDYO1g
   return(corpus)
 }
 
+pubmed_complete = function(data) {
+  missing_abstracts_but_found_pmid = data |>
+    filter(is.na(abstract)) |>
+    drop_na(pmid) |>
+    pull(pmid)
+  
+  pubmed_raw_features = paste("https://pubmed.ncbi.nlm.nih.gov/?term=", paste(missing_abstracts_but_found_pmid, collapse = "+"), "&show_snippets=off&format=pubmed&size=200", sep="") |> 
+    rvest::read_html() |> 
+    as.character()
+  
+  pmid_abstract = tibble(pmid = pubmed_raw_features |> # re-extraction of PMID, as a safety measure if order or count has changed
+                           str_extract_all("(?<=PMID- ).+") |>
+                           unlist(),
+                         abstract = strsplit(pubmed_raw_features, "PMID- ")[[1]][-1] |>
+                           str_extract("(?<=AB  - )([\\s\\S]*?)(?=[A-Z]{2,}\\s{1,}-)"),
+  )
+  
+  pubmed_complete = data |>
+    left_join(pmid_abstract, by="pmid") |> 
+    mutate(abstract = coalesce(abstract.x, abstract.y))
+  
+  pubmed_complete
+}
 
 SnowBall <- function(article_list, ndisp=50, depth=2, api_key='TdUUUOLUWn9HpA7zkZnu01NDYO1gVdVz71cDjFRQPeVDCrYGKWoY') {
   article_list<- gsub(" ", "", article_list)
@@ -51,9 +74,11 @@ SnowBall <- function(article_list, ndisp=50, depth=2, api_key='TdUUUOLUWn9HpA7zk
     request_lens_df(includes) |>
     as_tibble() |>
     mutate(doi = sapply(external_ids, get_id, "doi")) |> 
-    select(lens_id, title, abstract) |>
+    mutate(pmid = sapply(external_ids, get_id, "pmid")) |>
     left_join(df_freq, by="lens_id") |> 
-    arrange(-Freq)
+    arrange(-Freq) |> 
+    pubmed_complete() |> 
+    select(lens_id, title, abstract)
 
   return(complete_articles)
 }
