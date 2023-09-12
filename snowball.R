@@ -7,6 +7,7 @@ library(tibble)
 source("lens.R")
 
 citation_network <- function(id_list, api_key='TdUUUOLUWn9HpA7zkZnu01NDYO1gVdVz71cDjFRQPeVDCrYGKWoY') {
+  id_list<-na.omit(id_list)
   if(length(id_list) == 0 || is.na(id_list[1])) {
     return(NA)
   }
