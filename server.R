@@ -12,8 +12,6 @@ server <- function(input, output, session) {
     # Call the SnowBallFunction to generate the DataFrame Bibliographie
     Bibliographie <- SnowBall(PMID_origine, ndisp=ndisp, depth=depth)
     
-    
-    
     # Stocker la variable Bibliographie dans l'environnement global
     assign("Bibliographie", Bibliographie, envir = .GlobalEnv)
     
@@ -22,7 +20,11 @@ server <- function(input, output, session) {
   
   # Rendre la table "bibliographie_table" réactive à la recherche
   output$bibliographie_table <- renderDT({
-    bibliographie_reactive()
+    bibliographie_reactive() |> 
+      mutate(Lens = sprintf('<a href="https://www.lens.org/lens/scholar/article/%s/" target="_blank">%s</a>', lens_id, lens_id)) |> 
+      rename(Title = title, Abstract = abstract) |> 
+      select(Lens, Title, Abstract) |> 
+      DT::datatable(escape=F)
   })
   
   # Gérer le téléchargement de la bibliographie au format Excel (.xlsx)
