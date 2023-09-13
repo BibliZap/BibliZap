@@ -34,7 +34,8 @@ server <- function(input, output, session) {
   output$bibliography_table <- renderDT({
     bibliography_reactive() |> 
       mutate(Lens = sprintf('<a href="https://www.lens.org/lens/scholar/article/%s/main" target="_blank">%s</a>', lens_id, lens_id)) |> 
-      rename(Title = title, Abstract = abstract, Score = Freq, FirstAuthor = authors, Year = year_published, Journal = journal, PMID=pmid) |> 
+      mutate(PMID = sprintf('<a href="https://pubmed.ncbi.nlm.nih.gov/%s/" target="_blank">%s</a>',pmid, pmid))|>
+      rename(Title = title, Abstract = abstract, Score = Freq, FirstAuthor = authors, Year = year_published, Journal = journal) |> 
       select(FirstAuthor, Year, Journal, Title, Abstract, Lens, PMID, Score) |> 
       DT::datatable(escape=F)
   })
