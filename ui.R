@@ -122,7 +122,20 @@ ui <- fluidPage(
                            downloadButton("download_bibliography", "Download bibliography")
                   ),
                   tabPanel("Specific words",
-                           p("Available soon")
+                           fluidRow(
+                             
+                             div(class = "center-vertically",
+                                 actionButton("mots_specifiques_reactive", "Detect specifics words (click and wait 30 sec)", class = "custom-button custom-button-label")
+                                 
+                             )
+                             ,
+                             
+                             
+                             div(class = "center-vertically"
+                                 
+                             ),DTOutput("mots_specifiques")
+                             
+                           )
                   ),
                   tabPanel("How does it work ?",
                            h2("General principle"),

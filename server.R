@@ -1,6 +1,7 @@
 require(dplyr)
 
 source("snowball.R")
+source("bibliography_mining.R")
 
 server <- function(input, output, session) {
   bibliography_reactive <- eventReactive(input$submit_button, {
@@ -19,7 +20,7 @@ server <- function(input, output, session) {
     
     return(bibliography)
   })
-
+  
   observe({
     shinyjs::runjs(
       '$("#id_list").on("keydown", function(e) {
@@ -29,7 +30,7 @@ server <- function(input, output, session) {
       });'
     )
   })
-
+  
   # Make bibliography_table reactive
   output$bibliography_table <- renderDT({
     bibliography_reactive() |> 
@@ -46,20 +47,18 @@ server <- function(input, output, session) {
       paste("BibliZap-", format(Sys.time(), "%Y%m%d%H%M%S"), ".xlsx", sep = "")
     },
     content = function(file) {
+      # Get the bibliography data from the reactive
+      
       # Save the data to an Excel file
       openxlsx::write.xlsx(bibliography, file, row.names = FALSE)
     }
   )
   
   observeEvent(input$mots_specifiques_reactive, {
-    # Get the bibliography data from the reactive
-    bibliography <- bibliography_reactive()
     
     # Call the function to get specific words
-    mots_specifiques_resultat <- analyse_mots_specifiques(bibliography)
-    output$mots_specifiques_plot <- renderPlot({
-      # Create plot for specific words
-      plot(mots_specifiques_resultat, main = "Specific words")
-    })
+    output$mots_specifiques <-renderDT(bibli_mining(bibliography))
+    
+    
   })
 }
