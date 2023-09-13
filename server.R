@@ -46,12 +46,8 @@ server <- function(input, output, session) {
       paste("BibliZap-", format(Sys.time(), "%Y%m%d%H%M%S"), ".xlsx", sep = "")
     },
     content = function(file) {
-      # Get the bibliography data from the reactive
-      bibliography_to_dl <- bibliography$x$data
-      bibliography_to_dl$PMID <- gsub("<a.*?>(\\d+)</a>", "\\1", bibliography_to_dl$PMID)
-      
       # Save the data to an Excel file
-      openxlsx::write.xlsx(bibliography_to_dl, file, row.names = FALSE)
+      openxlsx::write.xlsx(bibliography, file, row.names = FALSE)
     }
   )
   
