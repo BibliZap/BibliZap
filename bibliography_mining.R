@@ -158,7 +158,7 @@ for(i in 1:nrow(df_specific)){
     mutate(random_order = sample(n())) %>%
     ungroup() %>%
     arrange(random_order) %>%
-    slice(1:4) %>%
+    slice(1:20) %>%
     select(-random_order)
   
   specific_words <- word_counts$word %>% paste(collapse = " ")
