@@ -85,7 +85,7 @@ snowball_bibliography <- function(id_list, ndisp=50, depth=2, api_key='TdUUUOLUW
     left_join(df_freq, by="lens_id") |> 
     arrange(-Freq) |> 
     pubmed_complete() |> 
-    select(authors,year_published, journal, title, abstract, scholarly_citations_count, Freq)
+    select(authors,year_published, journal, title, abstract, scholarly_citations_count, Freq,doi)
   
   for (i in 1:ndisp){
     complete_articles$authors[i]<-paste0(complete_articles$authors[[i]][[3]][[1]], ". ",complete_articles$authors[[i]][[2]][[1]])
