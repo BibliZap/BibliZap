@@ -12,6 +12,8 @@ server <- function(input, output, session) {
     
     depth <- input$depth_slider
     ndisp <- input$ndisp_slider
+    forward <- input$f_box
+    backward <- input$b_box
     
     bibliography <- snowball_bibliography(id_list, ndisp=ndisp, depth=depth)
     

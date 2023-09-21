@@ -6,7 +6,7 @@ library(tibble)
 
 source("lens.R")
 
-citation_network <- function(id_list, api_key='TdUUUOLUWn9HpA7zkZnu01NDYO1gVdVz71cDjFRQPeVDCrYGKWoY') {
+citation_network <- function(id_list, forward, backward, api_key='TdUUUOLUWn9HpA7zkZnu01NDYO1gVdVz71cDjFRQPeVDCrYGKWoY') {
   id_list<-na.omit(id_list)
   if(length(id_list) == 0 || is.na(id_list[1])) {
     return(NA)
@@ -20,7 +20,13 @@ citation_network <- function(id_list, api_key='TdUUUOLUWn9HpA7zkZnu01NDYO1gVdVz7
   
   cit_by <- unlist(dd[["scholarly_citations"]])
   references <- unlist(dd[["references"]])
-  corpus = c(cit_by,references)
+  if (forward==TRUE){
+    if (backward==TRUE){
+  corpus = c(cit_by,references)}
+    else{corpus = c(references)}}
+  else if (backward==TRUE){
+    corpus = c(cit_by)}
+  else{return(NA)}
   
   if(is.null(corpus)) {
     return(NA)
@@ -52,14 +58,14 @@ pubmed_complete = function(data) {
   pubmed_complete
 }
 
-snowball_bibliography <- function(id_list, ndisp=50, depth=2, api_key='TdUUUOLUWn9HpA7zkZnu01NDYO1gVdVz71cDjFRQPeVDCrYGKWoY') {
+snowball_bibliography <- function(id_list, forward=TRUE, backward=TRUE, ndisp=50, depth=2, api_key='TdUUUOLUWn9HpA7zkZnu01NDYO1gVdVz71cDjFRQPeVDCrYGKWoY') {
   id_list<- gsub(" ", "", id_list)
   corpus_list = list()
   corpus_list[[1]] = id_list
   
   for(i in 1:depth) {
     print(sprintf('Depth %d', i))
-    corpus_list[[i+1]] = citation_network(corpus_list[[i]], api_key=api_key)
+    corpus_list[[i+1]] = citation_network(corpus_list[[i]], forward, backward, api_key=api_key)
   }
   
   corpus = corpus_list |>
