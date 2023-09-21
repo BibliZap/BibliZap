@@ -141,6 +141,17 @@ ui <- fluidPage(
                              
                            )
                   ),
+                    div(
+                    style = "text-align: left;",  # Left-align the text
+                    HTML("<hr>"),  # Horizontal line
+                    div(
+                      style = "margin-left: 10px;",  # Add left margin for the text
+                      "BibliZap is a free ", a("open-source", href="http://github.com/biblizap/biblizap/"), " project", tags$br(),tags$br(),
+                      "For questions, suggestions and inquieries:",a("contact@biblizap.org", href="mailto:contact@biblizap.org"), tags$br(), tags$br(),
+                      "Meta-data on articles are fetched from ", a("The Lens", href="http://lens.org/")," a not-for-profit service provided by Cambia (learn more on 'How does it work?')"
+                      
+                    )
+                    ),
                   tabPanel("How does it work ?",
                            h2("General principle"),
                            p("BibliZap aims to catalog articles similar to the source article based on both upward and downward citations. Downward citations correspond to the references of the articles (their bibliography). Upward citations correspond to the articles citing the source article. Here is a diagram summarizing the process:"),
