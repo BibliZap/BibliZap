@@ -103,10 +103,7 @@ ui <- fluidPage(
                                                                selected = 50)
                                           )
                                  )
-                        ),
-                        div(class = "center-vertically",
-                            checkboxInput("f_box", "Forward", TRUE),
-                            checkboxInput("b_box", "Backward", TRUE)
+
                         ),
                         tags$div(class = "row", # Nouvelle ligne pour le bouton
                                  tags$div(class = "col-md-12", # Colonne pleine largeur
