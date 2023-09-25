@@ -63,21 +63,24 @@ snowball_bibliography <- function(id_list, forward=TRUE, backward=TRUE, ndisp=50
   corpus_list = list()
   corpus_list[[1]] = id_list
   
-  for(i in 1:depth) {
-    print(sprintf('Depth %d', i))
-    corpus_list[[i+1]] = citation_network(corpus_list[[i]], forward, backward, api_key=api_key)
-  }
-  
-  corpus = corpus_list |>
-    unlist() |> 
-    na.omit() |> 
-    c()
-  
-  df_freq = table(corpus) |> 
-    as_tibble() |> 
-    arrange(desc(n)) |>
-    slice(1:ndisp) |>
-    rename("lens_id" = "corpus", "Freq" = "n")
+corpus_list_asc1 = citation_network(id_list, backward, forward=FALSE, api_key=api_key)
+corpus_list_desc1 = citation_network(id_list, forward, backward=FALSE, api_key=api_key)
+corpus_list_asc2 <- c(corpus_list_asc1, citation_network(corpus_list_asc1, backward, forward=FALSE, api_key=api_key))
+corpus_list_desc2 <- c(corpus_list_desc1, citation_network(corpus_list_asc1, forward, backward=FALSE, api_key=api_key))
+corpus_list_desc2 <- c(corpus_list_desc2, citation_network(corpus_list_desc1, forward, backward=FALSE, api_key=api_key))
+corpus_list_asc2 <- c(corpus_list_asc2, citation_network(corpus_list_desc1, backward, forward=FALSE, api_key=api_key))
+chiffres_uniques <- union(corpus_list_asc2, corpus_list_desc2)
+
+df <- data.frame(lens_id = chiffres_uniques)
+
+df$freq_desc <- sapply(chiffres_uniques, function(x) sum(corpus_list_desc2 == x))
+
+df$freq_asc <- sapply(chiffres_uniques, function(x) sum(corpus_list_asc2 == x))
+
+df$freq <- df$freq_asc+df$freq_desc
+
+df_freq <- df %>% arrange(desc(freq)) %>% slice(1:ndisp)
+
   
   includes = c("lens_id","title", "authors", "abstract", "external_ids", "scholarly_citations_count", "source", "year_published")
   
@@ -89,9 +92,9 @@ snowball_bibliography <- function(id_list, forward=TRUE, backward=TRUE, ndisp=50
     mutate(journal = source$title) |>
     mutate(pmid = sapply(external_ids, get_id, "pmid")) |>
     left_join(df_freq, by="lens_id") |> 
-    arrange(-Freq) |> 
+    arrange(-freq) |> 
     pubmed_complete() |> 
-    select(authors,year_published, journal, title, abstract, scholarly_citations_count, Freq,doi)
+    select(authors,year_published, journal, title, abstract, scholarly_citations_count, freq, freq_asc, freq_desc,doi)
   
   for (i in 1:ndisp){
     complete_articles$authors[i]<-paste0(complete_articles$authors[[i]][[3]][[1]], ". ",complete_articles$authors[[i]][[2]][[1]])
