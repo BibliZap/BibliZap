@@ -175,8 +175,10 @@ ui <- fluidPage(
                            h3("Contact Information"),
                            p("If you have any questions or concerns regarding the legal information on this website, please contact us at contact@biblizap.org"),
                            h3("Web host"),
-                           p("Website hosted by OVH (2 rue Kellermann – BP 80157 59053 ROUBAIX CEDEX 1)."
-                           )),
+                           p("Website hosted by OVH (2 rue Kellermann – BP 80157 59053 ROUBAIX CEDEX 1)."),
+                           h3("Inventors"),
+                           p("BibliZap was created and developped by :", textOutput("shuffled_names"))
+                          ),
                   tabPanel("Git",
                            div(class = "center-vertically-horiz",
                                a(href = "https://github.com/BibliZap",
