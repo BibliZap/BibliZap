@@ -138,19 +138,9 @@ ui <- fluidPage(
                              
                            )
                   ),
-                    div(
-                    style = "text-align: left;",  # Left-align the text
-                    HTML("<hr>"),  # Horizontal line
-                    div(
-                      style = "margin-left: 10px;",  # Add left margin for the text
-                      "BibliZap is a free ", a("open-source", href="http://github.com/biblizap/biblizap/"), " project", tags$br(),tags$br(),
-                      "For questions, suggestions and inquieries:",a("contact@biblizap.org", href="mailto:contact@biblizap.org"), tags$br(), tags$br(),
-                      "Meta-data on articles are fetched from ", a("The Lens", href="http://lens.org/")," a not-for-profit service provided by Cambia (learn more on 'How does it work?')"
-                      
-                    )
-                    ),
-                  tabPanel("How does it work ?",
+                           tabPanel("How does it work ?",
                            h2("General principle"),
+                           p("BibliZap is a free and open-source project"),
                            p("BibliZap aims to catalog articles similar to the source article based on both upward and downward citations. Downward citations correspond to the references of the articles (their bibliography). Upward citations correspond to the articles citing the source article. Here is a diagram summarizing the process:"),
                            tags$img(src = "BibliZapFig1.svg", width = "800px"),
                            p("At each level, the number of times each PMID appears is recorded. At the end of the process, the sum of occurrences provides the score. For instance, if an article is found once in the references of the source article, then is discovered 6 times in the articles cited by the articles that are cited by the source article, and is not found elsewhere, its score will be 7."),
@@ -164,6 +154,15 @@ ui <- fluidPage(
                            h3("Is there a risk that BibliZap contributes to the citation bias?"),
                            p("Yes, there is a potential risk of BibliZap contributing to citation bias. Therefore, it is extremely important to always conduct keyword-based article searches in parallel. This is especially crucial when you intend to publish your work.")),
                            h2(" "),
+                   tabPanel("Data source",
+                           h2("Citation data"),
+                           p('Citation data on articles are fetched from', a("The Lens", href = "http://lens.org/", target = "_blank")),
+                           h2("Meta data"),
+                           p('Meta data on articles are fetched from',
+                             a("The Lens", href = "http://lens.org/", target = "_blank"),
+                             "and",
+                             a("Pubmed", href = "http://pubmed.gov/", target = "_blank")
+                             )),
                   tabPanel("Legal Information",
                            h2("Legal Information"),
                            h3("Disclaimer"),
