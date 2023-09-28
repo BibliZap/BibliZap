@@ -74,4 +74,13 @@ server <- function(input, output, session) {
     
     
   })
+
+        names <- c("Raphaël Bentegeac", "Bastien Le Guellec", "Victor Leblanc")
+  
+  # Mélanger la liste de noms de manière aléatoire
+  shuffled_names <- sample(names)
+  
+  output$shuffled_names <- renderText({
+    paste(shuffled_names, collapse = ", ")
+  })
 }
