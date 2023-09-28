@@ -109,7 +109,8 @@ ui <- fluidPage(
                                  tags$div(class = "col-md-12", # Colonne pleine largeur
                                           tags$div(class = "button-container",
                                                    actionButton("submit_button", "Search for related articles", class = "custom-button custom-button-label")
-                                          )
+                                          ),
+                                          p("Beta version, an optimized version is coming soon", class = "center-vertically")
                                  )
                         )
                )
