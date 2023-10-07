@@ -58,11 +58,17 @@ pubmed_complete = function(data) {
   pubmed_complete
 }
 
-snowball_bibliography <- function(id_list, forward=TRUE, backward=TRUE, ndisp=50, depth=2, api_key='TdUUUOLUWn9HpA7zkZnu01NDYO1gVdVz71cDjFRQPeVDCrYGKWoY') {
+snowball_bibliography <- function(id_list, unwanted_list=c("empty"), forward=TRUE, backward=TRUE, ndisp=50, depth=2, api_key='TdUUUOLUWn9HpA7zkZnu01NDYO1gVdVz71cDjFRQPeVDCrYGKWoY') {
   id_list<- gsub(" ", "", id_list)
+
+  unwanted_list <- unlist(strsplit(unwanted_list, split = "[, ]+"))  
+  print(is.numeric(ndisp))
+  print(is.numeric(length(unwanted_list)))
+  if (length(unwanted_list)>0){
+    ndisp<-as.numeric(ndisp)+length(unwanted_list)
+    }
   corpus_list = list()
   corpus_list[[1]] = id_list
-  
   for(i in 1:depth) {
     print(sprintf('Depth %d', i))
     corpus_list[[i+1]] = citation_network(corpus_list[[i]], forward, backward, api_key=api_key)
@@ -89,10 +95,11 @@ snowball_bibliography <- function(id_list, forward=TRUE, backward=TRUE, ndisp=50
     mutate(journal = source$title) |>
     mutate(pmid = sapply(external_ids, get_id, "pmid")) |>
     left_join(df_freq, by="lens_id") |> 
+    filter(!doi %in% unwanted_list & !pmid %in% unwanted_list) |>
     arrange(-Freq) |> 
     pubmed_complete() |> 
-    select(authors,year_published, journal, title, abstract, scholarly_citations_count, Freq,doi)
-  
+    select(authors,year_published, journal, title, abstract, scholarly_citations_count, Freq,doi, pmid)
+  if (length(complete_articles$title)<ndisp){ndisp<-length(complete_articles$title)}
   for (i in 1:ndisp){
     complete_articles$authors[i]<-paste0(complete_articles$authors[[i]][[3]][[1]], ". ",complete_articles$authors[[i]][[2]][[1]])
   }
