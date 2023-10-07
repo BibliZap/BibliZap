@@ -86,6 +86,13 @@ ui <- fluidPage(
                                           )
                                  )
                         ),
+                        
+                        tags$div(class = "row", # Nouvelle ligne pour le bouton
+                                 tags$div(class = "col-md-12", # Colonne pleine largeur
+                                          tags$div(class = "button-container",
+                                                   actionButton("submit_button", "Search for related articles", class = "custom-button custom-button-label")
+                                          ),
+                                          p("Beta version, an optimized version is coming soon", class = "center-vertically"),
                         tags$div(class = "row", # Nouvelle ligne pour les selectInputs
                                  tags$div(class = "col-md-6", 
                                           tags$div(class = "boite-defilement",
@@ -105,12 +112,17 @@ ui <- fluidPage(
                                  )
 
                         ),
-                        tags$div(class = "row", # Nouvelle ligne pour le bouton
-                                 tags$div(class = "col-md-12", # Colonne pleine largeur
-                                          tags$div(class = "button-container",
-                                                   actionButton("submit_button", "Search for related articles", class = "custom-button custom-button-label")
-                                          ),
-                                          p("Beta version, an optimized version is coming soon", class = "center-vertically")
+
+                        tags$div(class = "text-center d-flex justify-content-center", 
+                                 actionButton("toggle_unwanted", "Enter unwanted article IDs")
+                        ),                        conditionalPanel(
+                          condition = "input.toggle_unwanted % 2 == 1",
+                          tags$div(class = "input-container",
+                                   tags$label(class = "centered-label custom-label", "Enter unwanted article IDs (PMID, DOI, or Lens ID separated by commas)"),
+                                   tags$textarea(id = "unwanted_id_list", rows = 3, placeholder = "Enter IDs separated by commas", class = "form-control custom-textinput")
+                          )
+                        )
+                        
                                  )
                         )
                )
@@ -121,8 +133,10 @@ ui <- fluidPage(
                   tabPanel("Bibliography",
                            # Spinner to indicate loading
                            withSpinner(DTOutput("bibliography_table"), type = 2, color = "black", color.background = "white"),
-                           downloadButton("download_bibliography", "Download bibliography")
+                           downloadButton("download_bibliography", "Download bibliography"),
+                           textAreaInput("selected_pmids", "Selected PMIDs:", "", width = "100%", height = "100px")
                   ),
+
                   tabPanel("Specific words",
                            fluidRow(
                              
