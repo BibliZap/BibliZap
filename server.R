@@ -69,6 +69,7 @@ server <- function(input, output, session) {
     },
     content = function(file) {
       # Save the data to an Excel file
+      bibliography$authors <- sapply(bibliography$authors, function(x) x[[1]])
       openxlsx::write.xlsx(bibliography, file, row.names = FALSE)
     }
   )
