@@ -102,7 +102,6 @@ snowball_bibliography <- function(id_list, unwanted_list=c("empty"), forward=TRU
   if (length(complete_articles$title)<ndisp){ndisp<-length(complete_articles$title)}
   for (i in 1:ndisp){
     complete_articles$authors[i]<-paste0(complete_articles$authors[[i]][[3]][[1]], ". ",complete_articles$authors[[i]][[2]][[1]])
-    complete_articles$authors <- sapply(complete_articles$authors, function(x) x[[1]])
 
   }
   
