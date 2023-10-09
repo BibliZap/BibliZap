@@ -68,8 +68,6 @@ server <- function(input, output, session) {
       paste("BibliZap-", format(Sys.time(), "%Y%m%d%H%M%S"), ".xlsx", sep = "")
     },
     content = function(file) {
-      # unlist authors
-      bibliography$authors <- sapply(bibliography$authors, function(x) x[[1]])
       # Save the data to an Excel file
       openxlsx::write.xlsx(bibliography, file, row.names = FALSE)
     }
