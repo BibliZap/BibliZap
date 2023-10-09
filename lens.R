@@ -73,8 +73,8 @@ request_lens_df = function(id_list, includes=NULL, api_key='TdUUUOLUWn9HpA7zkZnu
     r = request_bodies[[i]] |>
       request_lens(api_key)
     
-    remaining_requests = r[["headers"]][["x-rate-limit-remaining-request-per-minute"]]
-    print(sprintf('%s requests remaining', remaining_requests))
+    remaining_requests = r[["headers"]][["x-rate-limit-remaining-request-per-month"]]
+    print(sprintf('%s requests remaining for this month', remaining_requests))
     if(remaining_requests == 1) {
       Sys.sleep(60)
     }
